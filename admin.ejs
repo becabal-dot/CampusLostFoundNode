@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Panel | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main { max-width: 1100px; margin: auto; }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        h1, h2 { color: #24479c; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0 30px;
+        }
+
+        .stat, .panel {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        .stat strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 28px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid #e2e7f0;
+        }
+
+        th { background: #e8edff; }
+
+        select, button {
+            padding: 8px;
+            border: 1px solid #ccd3e0;
+            border-radius: 5px;
+        }
+
+        button {
+            border: 0;
+            background: #24479c;
+            color: white;
+            cursor: pointer;
+        }
+
+        form { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .empty { padding: 18px; }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/report">Report an Item</a>
+        <a href="/my-reports">My Reports</a>
+        <a href="/my-claims">My Claims</a>
+    </nav>
+
+    <h1>Admin Panel</h1>
+    <p>Review submitted items and claims. Changes will be saved in the database.</p>
+
+    <section class="stats">
+        <div class="stat">
+            Total Items
+            <strong><%= itemCount %></strong>
+        </div>
+        <div class="stat">
+            Pending Items
+            <strong><%= pendingItemCount %></strong>
+        </div>
+        <div class="stat">
+            Total Claims
+            <strong><%= claimCount %></strong>
+        </div>
+        <div class="stat">
+            Pending Claims
+            <strong><%= pendingClaimCount %></strong>
+        </div>
+    </section>
+
+    <h2>Manage Item Reports</h2>
+
+    <% if (items.length === 0) { %>
+        <section class="panel empty">No item reports found.</section>
+    <% } else { %>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Reported By</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(item => { %>
+                        <tr>
+                            <td><a href="/item/<%= item.id %>"><%= item.item_name %></a></td>
+                            <td><%= item.report_type %></td>
+                            <td><%= item.category %></td>
+                            <td><%= item.reporter_name %></td>
+                            <td><%= item.status %></td>
+                            <td>
+                                <form action="/admin/items/<%= item.id %>/status" method="POST">
+                                    <select name="status" required>
+                                        <option value="pending" <%= item.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="approved" <%= item.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                                        <option value="rejected" <%= item.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                    </select>
+                                    <button type="submit">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <h2>Manage Claims</h2>
+
+    <% if (claims.length === 0) { %>
+        <section class="panel empty">No claims found.</section>
+    <% } else { %>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Claimant</th>
+                        <th>Verification Details</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% claims.forEach(claim => { %>
+                        <tr>
+                            <td><%= claim.item_name %></td>
+                            <td><%= claim.claimant_name %></td>
+                            <td><%= claim.verification_answer %></td>
+                            <td><%= claim.status %></td>
+                            <td>
+                                <form action="/admin/claims/<%= claim.id %>/status" method="POST">
+                                    <select name="status" required>
+                                        <option value="pending" <%= claim.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="approved" <%= claim.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                                        <option value="rejected" <%= claim.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                    </select>
+                                    <button type="submit">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</main>
+</body>
+</html>

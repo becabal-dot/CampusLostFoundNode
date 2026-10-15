@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Item Details | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        .card {
+            padding: 26px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        h1 { color: #24479c; }
+
+        .detail { margin: 16px 0; }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+
+        input { border: 1px solid #ccd3e0; }
+
+        button {
+            border: 0;
+            background: #24479c;
+            color: white;
+            cursor: pointer;
+        }
+
+        .notice {
+            padding: 12px;
+            background: #f4f6fb;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/my-reports">My Reports</a>
+        <a href="/my-claims">My Claims</a>
+    </nav>
+
+    <section class="card">
+        <h1><%= item.item_name %></h1>
+
+        <p class="detail"><strong>Report Type:</strong> <%= item.report_type %></p>
+        <p class="detail"><strong>Category:</strong> <%= item.category %></p>
+        <p class="detail"><strong>Description:</strong> <%= item.description %></p>
+        <p class="detail"><strong>Color:</strong> <%= item.color || 'Not specified' %></p>
+        <p class="detail"><strong>Brand:</strong> <%= item.brand || 'Not specified' %></p>
+        <p class="detail"><strong>Location:</strong> <%= item.location %></p>
+        <p class="detail"><strong>Date:</strong> <%= item.event_date || 'Not specified' %></p>
+        <p class="detail"><strong>Reported by:</strong> <%= item.reporter_name %></p>
+        <p class="detail"><strong>Status:</strong> <%= item.status %></p>
+
+        <% if (item.user_id !== currentUser.id) { %>
+            <hr>
+            <h2>Claim This Item</h2>
+            <p>Please provide information to help verify that the item belongs to you.</p>
+
+            <form action="/item/<%= item.id %>/claim" method="POST">
+                <label for="verification_answer">Verification Details</label>
+                <input
+                    type="text"
+                    id="verification_answer"
+                    name="verification_answer"
+                    placeholder="Describe identifying details"
+                    required
+                    maxlength="500"
+                >
+                <button type="submit">Submit Claim</button>
+            </form>
+        <% } else { %>
+            <p class="notice">This is your own report.</p>
+        <% } %>
+
+        <p><a href="/browse">← Back to Browse Items</a></p>
+    </section>
+</main>
+</body>
+</html>
