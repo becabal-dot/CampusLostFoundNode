@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Report an Item | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        form {
+            background: white;
+            padding: 26px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        h1 { color: #24479c; }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd3e0;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 6px;
+            background: #24479c;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .error {
+            padding: 12px;
+            background: #ffeded;
+            color: #a32121;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/my-reports">My Reports</a>
+        <a href="/my-claims">My Claims</a>
+    </nav>
+
+    <h1>Report a Lost or Found Item</h1>
+    <p>Provide accurate details to help reunite items with their owners.</p>
+
+    <% if (error) { %>
+        <p class="error"><%= error %></p>
+    <% } %>
+
+    <form action="/report" method="POST">
+        <label for="report_type">Report Type *</label>
+        <select id="report_type" name="report_type" required>
+            <option value="">Select report type</option>
+            <option value="Lost">Lost Item</option>
+            <option value="Found">Found Item</option>
+        </select>
+
+        <label for="item_name">Item Name *</label>
+        <input type="text" id="item_name" name="item_name"
+               maxlength="150" required>
+
+        <label for="category">Category *</label>
+        <select id="category" name="category" required>
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Personal Belongings">Personal Belongings</option>
+            <option value="Documents">Documents</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Others">Others</option>
+        </select>
+
+        <label for="description">Description *</label>
+        <textarea id="description" name="description"
+                  maxlength="2000" required></textarea>
+
+        <label for="color">Color</label>
+        <input type="text" id="color" name="color" maxlength="50">
+
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand" maxlength="100">
+
+        <label for="location">Location *</label>
+        <input type="text" id="location" name="location"
+               maxlength="150" required>
+
+        <label for="event_date">Date Lost or Found</label>
+        <input type="date" id="event_date" name="event_date">
+
+        <button type="submit">Submit Report</button>
+    </form>
+
+    <p><a href="/dashboard">← Back to Dashboard</a></p>
+</main>
+</body>
+</html>

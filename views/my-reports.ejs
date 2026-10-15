@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Reports | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main { max-width: 1000px; margin: auto; }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        h1 { color: #24479c; }
+
+        .table-wrap {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e7f0;
+        }
+
+        th { background: #e8edff; }
+
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #e8edff;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/report">Report an Item</a>
+        <a href="/my-claims">My Claims</a>
+    </nav>
+
+    <h1>My Reports</h1>
+    <p>View the reports you have submitted and their current status.</p>
+
+    <% if (items.length === 0) { %>
+        <section class="empty">
+            <h3>You haven't submitted any reports yet.</h3>
+            <a href="/report">Submit your first report</a>
+        </section>
+    <% } else { %>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Report Type</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <a href="/item/<%= item.id %>">
+                                    <%= item.item_name %>
+                                </a>
+                            </td>
+                            <td><%= item.report_type %></td>
+                            <td><%= item.category %></td>
+                            <td><%= item.location %></td>
+                            <td><%= item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A' %></td>
+                            <td><span class="status"><%= item.status %></span></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</main>
+</body>
+</html>

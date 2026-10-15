@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Browse Items | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 { color: #24479c; }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        .search {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccd3e0;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 6px;
+            background: #24479c;
+            color: white;
+            cursor: pointer;
+        }
+
+        .items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .item {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #0000000d;
+            overflow-wrap: anywhere;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #e8edff;
+            color: #24479c;
+            font-size: 13px;
+        }
+
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/report">Report an Item</a>
+        <a href="/my-reports">My Reports</a>
+        <a href="/my-claims">My Claims</a>
+        <% if (currentUser && currentUser.role === 'admin') { %>
+            <a href="/admin">Admin Panel</a>
+        <% } %>
+    </nav>
+
+    <h1>Browse Lost & Found Items</h1>
+    <p>Search for items reported on campus.</p>
+
+    <form class="search" action="/browse" method="GET">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search item, category, description, or location"
+            value="<%= search %>"
+        >
+        <button type="submit">Search</button>
+    </form>
+
+    <% if (items.length === 0) { %>
+        <div class="empty">
+            <h3>No items found.</h3>
+            <p>Try another search or check again later.</p>
+        </div>
+    <% } else { %>
+        <section class="items">
+            <% items.forEach(item => { %>
+                <article class="item">
+                    <span class="tag"><%= item.report_type %></span>
+                    <h2><%= item.item_name %></h2>
+                    <p><strong>Category:</strong> <%= item.category %></p>
+                    <p><strong>Description:</strong> <%= item.description %></p>
+                    <p><strong>Color:</strong> <%= item.color || 'Not specified' %></p>
+                    <p><strong>Brand:</strong> <%= item.brand || 'Not specified' %></p>
+                    <p><strong>Location:</strong> <%= item.location %></p>
+                    <p><strong>Date:</strong> <%= item.event_date || 'Not specified' %></p>
+                    <a href="/item/<%= item.id %>">View Details</a>
+                </article>
+            <% }) %>
+        </section>
+    <% } %>
+</main>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Campus Lost & Found | Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        header {
+            background: #24479c;
+            color: white;
+            padding: 20px 6%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px 6%;
+            background: white;
+            border-bottom: 1px solid #e2e7f0;
+        }
+
+        nav a {
+            color: #24479c;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            background: #e8edff;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            background: white;
+            padding: 26px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .welcome h2 {
+            color: #24479c;
+            margin-top: 0;
+        }
+
+        .role {
+            display: inline-block;
+            background: #e8edff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: capitalize;
+        }
+
+        .notice {
+            margin-top: 18px;
+            color: #596579;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Campus Lost &amp; Found System</h1>
+    </header>
+
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/report">Report Lost / Found</a>
+        <a href="/my-reports">My Reports</a>
+        <a href="/my-claims">My Claims</a>
+
+        <% if (user.role === 'admin') { %>
+            <a href="/admin">Admin Panel</a>
+        <% } %>
+
+        <a href="/logout">Log Out</a>
+    </nav>
+
+    <main>
+        <section class="welcome">
+            <h2>Welcome, <%= user.full_name %>!</h2>
+            <p>Email: <%= user.email %></p>
+            <p>Role: <span class="role"><%= user.role %></span></p>
+
+            <p class="notice">
+                Use the navigation menu to access the system features.
+            </p>
+        </section>
+    </main>
+</body>
+</html>

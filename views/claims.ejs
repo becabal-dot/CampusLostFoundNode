@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Claims | Campus Lost & Found</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #24324a;
+        }
+
+        main { max-width: 1000px; margin: auto; }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        a { color: #24479c; }
+
+        h1 { color: #24479c; }
+
+        .table-wrap {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #0000000d;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e7f0;
+        }
+
+        th { background: #e8edff; }
+
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #e8edff;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/browse">Browse Items</a>
+        <a href="/report">Report an Item</a>
+        <a href="/my-reports">My Reports</a>
+    </nav>
+
+    <h1>My Claims</h1>
+    <p>Track the items you have requested to claim.</p>
+
+    <% if (claims.length === 0) { %>
+        <section class="empty">
+            <h3>You haven't submitted any claims yet.</h3>
+            <a href="/browse">Browse available items</a>
+        </section>
+    <% } else { %>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Report Type</th>
+                        <th>Verification Details</th>
+                        <th>Date Submitted</th>
+                        <th>Claim Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% claims.forEach(claim => { %>
+                        <tr>
+                            <td>
+                                <a href="/item/<%= claim.item_id %>">
+                                    <%= claim.item_name %>
+                                </a>
+                            </td>
+                            <td><%= claim.report_type %></td>
+                            <td><%= claim.verification_answer %></td>
+                            <td><%= claim.created_at ? new Date(claim.created_at).toLocaleDateString() : 'N/A' %></td>
+                            <td><span class="status"><%= claim.status %></span></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</main>
+</body>
+</html>
