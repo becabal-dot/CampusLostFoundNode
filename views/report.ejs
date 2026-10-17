@@ -1,143 +1,164 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Report an Item | Campus Lost & Found</title>
-    <style>
-        * { box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report an Item | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 
-        body {
-            margin: 0;
-            padding: 30px 16px;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        main {
-            max-width: 700px;
-            margin: auto;
-        }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        a { color: #24479c; }
-
-        form {
-            background: white;
-            padding: 26px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px #0000000d;
-        }
-
-        h1 { color: #24479c; }
-
-        label {
-            display: block;
-            margin-top: 16px;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccd3e0;
-            border-radius: 6px;
-            font: inherit;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        button {
-            width: 100%;
-            padding: 13px;
-            margin-top: 22px;
-            border: 0;
-            border-radius: 6px;
-            background: #24479c;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .error {
-            padding: 12px;
-            background: #ffeded;
-            color: #a32121;
-            border-radius: 6px;
-        }
-    </style>
 </head>
+
 <body>
-<main>
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/my-reports">My Reports</a>
-        <a href="/my-claims">My Claims</a>
-    </nav>
+  <%- include('partials/nav') %>
 
-    <h1>Report a Lost or Found Item</h1>
-    <p>Provide accurate details to help reunite items with their owners.</p>
+  <main class="report-shell">
+    <section class="report-hero">
+      <div>
+        <p class="page-eyebrow"><span></span> Help reconnect belongings</p>
+        <h1>Report an item</h1>
+        <p>Share a few details about the lost or found item. Clear information helps the right person recognize it.</p>
+      </div>
+      <a class="report-back-link" href="/dashboard">← Back to dashboard</a>
+      <div class="report-hero-decoration" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M14 21h36l-3 34H17l-3-34Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+          <path d="M23 22v-5a9 9 0 0 1 18 0v5M25 35l5 5 10-11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </section>
 
-    <% if (error) { %>
-        <p class="error"><%= error %></p>
-    <% } %>
+    <section class="report-form-card">
+      <div class="report-form-heading">
+        <span class="report-form-step">REPORT DETAILS</span>
+        <h2>Tell us about the item</h2>
+        <p>Fields marked with * are required.</p>
+      </div>
 
-    <form action="/report" method="POST">
-        <label for="report_type">Report Type *</label>
-        <select id="report_type" name="report_type" required>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="report-error" role="alert">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <div class="report-tip">
+        <strong>Before submitting:</strong> Choose whether the item is lost or found. Provide a clear description and the most accurate location and date you can.
+      </div>
+
+      <form action="/report" method="POST" enctype="multipart/form-data">
+        <div class="field">
+          <label for="report_type">Report Type *</label>
+          <select id="report_type" name="report_type" required>
             <option value="">Select report type</option>
-            <option value="Lost">Lost Item</option>
-            <option value="Found">Found Item</option>
-        </select>
+            <option value="Lost" <%= reportType === 'lost' ? 'selected' : '' %>>I lost an item</option>
+            <option value="Found" <%= reportType === 'found' ? 'selected' : '' %>>I found an item</option>
+          </select>
+        </div>
 
-        <label for="item_name">Item Name *</label>
-        <input type="text" id="item_name" name="item_name"
-               maxlength="150" required>
+        <div class="field">
+          <label for="item_name">Item Name *</label>
+          <input type="text" id="item_name" name="item_name" placeholder="e.g., Wallet, ID, Umbrella" maxlength="150" required>
+        </div>
 
-        <label for="category">Category *</label>
-        <select id="category" name="category" required>
-            <option value="">Select category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Personal Belongings">Personal Belongings</option>
-            <option value="Documents">Documents</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Others">Others</option>
-        </select>
+        <div class="form-row">
+          <div class="field">
+            <label for="category">Category *</label>
+            <select id="category" name="category" required>
+              <option value="">Select category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Personal Belongings">Personal Belongings</option>
+              <option value="School Supplies">School Supplies</option>
+              <option value="Documents and IDs">Documents and IDs</option>
+              <option value="Clothing and Accessories">Clothing and Accessories</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
 
-        <label for="description">Description *</label>
-        <textarea id="description" name="description"
-                  maxlength="2000" required></textarea>
+          <div class="field">
+            <label for="color">Color</label>
+            <input type="text" id="color" name="color" placeholder="e.g., Black, Blue" maxlength="50">
+          </div>
+        </div>
 
-        <label for="color">Color</label>
-        <input type="text" id="color" name="color" maxlength="50">
+        <div class="form-row">
+          <div class="field">
+            <label for="location">Location *</label>
+            <input type="text" id="location" name="location" placeholder="e.g., Library, CS Building" maxlength="150" required>
+          </div>
 
-        <label for="brand">Brand</label>
-        <input type="text" id="brand" name="brand" maxlength="100">
+          <div class="field">
+            <label for="event_date">Date Lost or Found *</label>
+            <input type="date" id="event_date" name="event_date" required>
+          </div>
+        </div>
 
-        <label for="location">Location *</label>
-        <input type="text" id="location" name="location"
-               maxlength="150" required>
+        <div class="field">
+          <label for="brand">Brand or Identifying Details</label>
+          <input type="text" id="brand" name="brand" placeholder="e.g., Brand name or unique feature" maxlength="100">
+          <p class="hint">Avoid including sensitive personal information in your public description.</p>
+        </div>
 
-        <label for="event_date">Date Lost or Found</label>
-        <input type="date" id="event_date" name="event_date">
+        <div class="field">
+          <label for="description">Item Description *</label>
+          <textarea id="description" name="description" maxlength="2000" placeholder="Describe the item, its appearance, and other helpful details..." required></textarea>
+        </div>
 
-        <button type="submit">Submit Report</button>
-    </form>
+        <div class="field image-field">
+          <label for="proof_image">Item photo <span class="optional-label">Optional</span></label>
+          <input type="file" id="proof_image" name="proof_image"
+                 accept="image/jpeg,image/png,image/webp">
+          <p class="hint">JPG, PNG, or WebP. Maximum file size: 5 MB.</p>
+          <figure class="image-preview" id="image-preview" hidden>
+            <img id="image-preview-content" alt="Preview of the selected item photo">
+            <figcaption>Photo preview</figcaption>
+          </figure>
+        </div>
 
-    <p><a href="/dashboard">← Back to Dashboard</a></p>
-</main>
+        <div class="report-actions">
+          <button class="report-submit-button" type="submit">Submit report <span aria-hidden="true">→</span></button>
+          <a class="report-cancel-link" href="/dashboard">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
+  <script>
+    const imageInput = document.getElementById('proof_image');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewContent = document.getElementById('image-preview-content');
+    let previewUrl;
+
+    imageInput.addEventListener('change', function() {
+      const file = imageInput.files[0];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+      }
+
+      if (!file) {
+        imagePreview.hidden = true;
+        imagePreviewContent.removeAttribute('src');
+        return;
+      }
+
+      if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+        imageInput.setCustomValidity(
+          'Choose a JPG, PNG, or WebP image no larger than 5 MB.'
+        );
+        imageInput.reportValidity();
+        imageInput.value = '';
+        imagePreview.hidden = true;
+        return;
+      }
+
+      imageInput.setCustomValidity('');
+      previewUrl = URL.createObjectURL(file);
+      imagePreviewContent.src = previewUrl;
+      imagePreview.hidden = false;
+    });
+  </script>
 </body>
 </html>

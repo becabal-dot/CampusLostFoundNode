@@ -1,206 +1,165 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Panel | Campus Lost & Found</title>
-    <style>
-        * { box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 
-        body {
-            margin: 0;
-            padding: 30px 16px;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        main { max-width: 1100px; margin: auto; }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        a { color: #24479c; }
-
-        h1, h2 { color: #24479c; }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px;
-            margin: 20px 0 30px;
-        }
-
-        .stat, .panel {
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px #0000000d;
-        }
-
-        .stat strong {
-            display: block;
-            margin-top: 8px;
-            font-size: 28px;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-            margin-bottom: 30px;
-            background: white;
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-            min-width: 760px;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            vertical-align: top;
-            border-bottom: 1px solid #e2e7f0;
-        }
-
-        th { background: #e8edff; }
-
-        select, button {
-            padding: 8px;
-            border: 1px solid #ccd3e0;
-            border-radius: 5px;
-        }
-
-        button {
-            border: 0;
-            background: #24479c;
-            color: white;
-            cursor: pointer;
-        }
-
-        form { display: flex; flex-wrap: wrap; gap: 6px; }
-
-        .empty { padding: 18px; }
-    </style>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f3f6fc; color: #202b40; }
+    nav {
+      background: #193779; color: white; padding: 18px 6%;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 14px; flex-wrap: wrap;
+    }
+    .brand { font-size: 19px; font-weight: bold; }
+    nav .links { display: flex; flex-wrap: wrap; gap: 18px; }
+    nav a { color: white; text-decoration: none; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 1200px; margin: auto; padding: 35px 22px; }
+    .heading { margin-bottom: 28px; }
+    h1 { font-size: 28px; margin-bottom: 9px; }
+    .subtitle { color: #718096; font-size: 14px; line-height: 1.6; }
+    .stats {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 17px; margin-bottom: 32px;
+    }
+    .stat {
+      background: white; padding: 22px; border-radius: 12px;
+      border: 1px solid #e8edf5;
+    }
+    .stat p { color: #718096; font-size: 13px; margin-bottom: 12px; }
+    .stat strong { color: #24479c; font-size: 29px; }
+    .section-title { font-size: 20px; margin-bottom: 17px; }
+    .table-wrap { background: white; border: 1px solid #e8edf5; border-radius: 12px; overflow-x: auto; margin-bottom: 32px; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th { background: #f8faff; color: #64748b; font-size: 12px; text-align: left; padding: 14px; text-transform: uppercase; }
+    td { padding: 14px; border-top: 1px solid #edf0f6; font-size: 13px; vertical-align: top; }
+    .status-form { display: flex; align-items: center; gap: 8px; }
+    .status-form select, .status-form button { padding: 8px; border: 1px solid #d9dfeb; border-radius: 6px; font: inherit; }
+    .status-form button { background: #24479c; color: white; border-color: #24479c; cursor: pointer; }
+    .empty { color: #718096; text-align: center; padding: 24px; }
+    footer { text-align: center; color: #8792a5; font-size: 12px; padding: 25px; }
+    @media (max-width: 850px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: 1fr; }
+      nav { padding: 17px 5%; }
+      nav .links { gap: 12px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
 </head>
+
 <body>
-<main>
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/report">Report an Item</a>
-        <a href="/my-reports">My Reports</a>
-        <a href="/my-claims">My Claims</a>
-    </nav>
+  <%- include('partials/nav') %>
 
-    <h1>Admin Panel</h1>
-    <p>Review submitted items and claims. Changes will be saved in the database.</p>
-
-    <section class="stats">
-        <div class="stat">
-            Total Items
-            <strong><%= itemCount %></strong>
-        </div>
-        <div class="stat">
-            Pending Items
-            <strong><%= pendingItemCount %></strong>
-        </div>
-        <div class="stat">
-            Total Claims
-            <strong><%= claimCount %></strong>
-        </div>
-        <div class="stat">
-            Pending Claims
-            <strong><%= pendingClaimCount %></strong>
-        </div>
+  <main class="container">
+    <section class="heading">
+      <h1>Admin Dashboard</h1>
+      <p class="subtitle">Monitor campus lost-and-found activity and access system management pages.</p>
     </section>
 
-    <h2>Manage Item Reports</h2>
+    <section class="stats">
+      <div class="stat">
+        <p>Total Reports</p>
+        <strong><%= typeof totalReports !== 'undefined' ? totalReports : 0 %></strong>
+      </div>
+      <div class="stat">
+        <p>Pending Reports</p>
+        <strong><%= typeof pendingReports !== 'undefined' ? pendingReports : 0 %></strong>
+      </div>
+      <div class="stat">
+        <p>Approved Items</p>
+        <strong><%= typeof approvedItems !== 'undefined' ? approvedItems : 0 %></strong>
+      </div>
+      <div class="stat">
+        <p>Total Claims</p>
+        <strong><%= typeof totalClaims !== 'undefined' ? totalClaims : 0 %></strong>
+      </div>
+      <div class="stat">
+        <p>Pending Claims</p>
+        <strong><%= typeof pendingClaimCount !== 'undefined' ? pendingClaimCount : 0 %></strong>
+      </div>
+    </section>
 
-    <% if (items.length === 0) { %>
-        <section class="panel empty">No item reports found.</section>
-    <% } else { %>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Type</th>
-                        <th>Category</th>
-                        <th>Reported By</th>
-                        <th>Status</th>
-                        <th>Update Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% items.forEach(item => { %>
-                        <tr>
-                            <td><a href="/item/<%= item.id %>"><%= item.item_name %></a></td>
-                            <td><%= item.report_type %></td>
-                            <td><%= item.category %></td>
-                            <td><%= item.reporter_name %></td>
-                            <td><%= item.status %></td>
-                            <td>
-                                <form action="/admin/items/<%= item.id %>/status" method="POST">
-                                    <select name="status" required>
-                                        <option value="pending" <%= item.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                                        <option value="approved" <%= item.status === 'approved' ? 'selected' : '' %>>Approved</option>
-                                        <option value="rejected" <%= item.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
-                                    </select>
-                                    <button type="submit">Save</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-    <% } %>
+    <h2 class="section-title">Item Reports</h2>
+    <section class="table-wrap">
+      <% if (items.length > 0) { %>
+        <table>
+          <thead>
+            <tr><th>Item</th><th>Type</th><th>Category</th><th>Reported by</th><th>Status</th><th>Update status</th></tr>
+          </thead>
+          <tbody>
+            <% items.forEach(function(item) { %>
+              <tr>
+                <td>
+                  <% if (item.image && /^\/uploads\/[a-f0-9-]+\.(jpg|png|webp)$/i.test(item.image)) { %>
+                    <img class="report-thumbnail" src="<%= item.image %>" alt="Photo of <%= item.item_name %>">
+                  <% } %>
+                  <a href="/item/<%= item.id %>"><%= item.item_name %></a>
+                </td>
+                <td><%= item.report_type %></td>
+                <td><%= item.category %></td>
+                <td><%= item.reporter_name %></td>
+                <td><%= item.status %></td>
+                <td>
+                  <form class="status-form" action="/admin/items/<%= item.id %>/status" method="POST">
+                    <select name="status" aria-label="Status for <%= item.item_name %>">
+                      <% ['pending', 'approved', 'rejected'].forEach(function(status) { %>
+                        <option value="<%= status %>" <%= item.status === status ? 'selected' : '' %>><%= status %></option>
+                      <% }) %>
+                    </select>
+                    <button type="submit">Save</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="empty">There are no item reports yet.</p>
+      <% } %>
+    </section>
 
-    <h2>Manage Claims</h2>
+    <h2 class="section-title">Claims</h2>
+    <section class="table-wrap">
+      <% if (claims.length > 0) { %>
+        <table>
+          <thead>
+            <tr><th>Item</th><th>Claimant</th><th>Verification details</th><th>Status</th><th>Update status</th></tr>
+          </thead>
+          <tbody>
+            <% claims.forEach(function(claim) { %>
+              <tr>
+                <td><%= claim.item_name %></td>
+                <td><%= claim.claimant_name %></td>
+                <td><%= claim.verification_answer %></td>
+                <td><%= claim.status %></td>
+                <td>
+                  <form class="status-form" action="/admin/claims/<%= claim.id %>/status" method="POST">
+                    <select name="status" aria-label="Status for claim <%= claim.id %>">
+                      <% ['pending', 'approved', 'rejected'].forEach(function(status) { %>
+                        <option value="<%= status %>" <%= claim.status === status ? 'selected' : '' %>><%= status %></option>
+                      <% }) %>
+                    </select>
+                    <button type="submit">Save</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="empty">There are no claims yet.</p>
+      <% } %>
+    </section>
+  </main>
 
-    <% if (claims.length === 0) { %>
-        <section class="panel empty">No claims found.</section>
-    <% } else { %>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Claimant</th>
-                        <th>Verification Details</th>
-                        <th>Status</th>
-                        <th>Update Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% claims.forEach(claim => { %>
-                        <tr>
-                            <td><%= claim.item_name %></td>
-                            <td><%= claim.claimant_name %></td>
-                            <td><%= claim.verification_answer %></td>
-                            <td><%= claim.status %></td>
-                            <td>
-                                <form action="/admin/claims/<%= claim.id %>/status" method="POST">
-                                    <select name="status" required>
-                                        <option value="pending" <%= claim.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                                        <option value="approved" <%= claim.status === 'approved' ? 'selected' : '' %>>Approved</option>
-                                        <option value="rejected" <%= claim.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
-                                    </select>
-                                    <button type="submit">Save</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-    <% } %>
-</main>
+  <footer>© Campus Lost &amp; Found System — Administration</footer>
 </body>
 </html>

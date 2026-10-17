@@ -1,113 +1,167 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Item Details | Campus Lost & Found</title>
-    <style>
-        * { box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Details | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 
-        body {
-            margin: 0;
-            padding: 30px 16px;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        main {
-            max-width: 700px;
-            margin: auto;
-        }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        a { color: #24479c; }
-
-        .card {
-            padding: 26px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px #0000000d;
-        }
-
-        h1 { color: #24479c; }
-
-        .detail { margin: 16px 0; }
-
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 6px;
-        }
-
-        input { border: 1px solid #ccd3e0; }
-
-        button {
-            border: 0;
-            background: #24479c;
-            color: white;
-            cursor: pointer;
-        }
-
-        .notice {
-            padding: 12px;
-            background: #f4f6fb;
-            border-radius: 6px;
-        }
-    </style>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f3f6fc; color: #202b40; }
+    nav {
+      background: #24479c; color: white; padding: 18px 6%;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 14px;
+    }
+    .brand { font-size: 19px; font-weight: bold; }
+    nav .links { display: flex; flex-wrap: wrap; gap: 18px; }
+    nav a { color: white; text-decoration: none; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 1000px; margin: auto; padding: 35px 22px; }
+    .back { color: #24479c; text-decoration: none; font-size: 14px; display: inline-block; margin-bottom: 22px; }
+    .back:hover { text-decoration: underline; }
+    .item-panel {
+      background: white; border: 1px solid #e8edf5; border-radius: 15px;
+      overflow: hidden; display: grid; grid-template-columns: 0.8fr 1.2fr;
+    }
+    .visual {
+      background: #e8efff; min-height: 350px; display: grid;
+      place-items: center; font-size: 90px;
+    }
+    .content { padding: 34px; min-width: 0; }
+    .tag {
+      display: inline-block; background: #e7f7ed; color: #207344;
+      border-radius: 20px; padding: 6px 11px; font-size: 12px;
+      font-weight: bold; margin-bottom: 16px;
+    }
+    h1 { font-size: 29px; margin-bottom: 14px; overflow-wrap: anywhere; }
+    .description { color: #64748b; line-height: 1.8; font-size: 14px; margin-bottom: 25px; overflow-wrap: anywhere; }
+    .details { border-top: 1px solid #e8edf5; }
+    .detail-row {
+      display: flex; justify-content: space-between; gap: 20px;
+      padding: 13px 0; border-bottom: 1px solid #edf0f6; font-size: 13px;
+    }
+    .detail-row span:first-child { color: #718096; }
+    .detail-row span:last-child { font-weight: bold; text-align: right; overflow-wrap: anywhere; }
+    .actions { margin-top: 25px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .claim-form { margin-top: 25px; }
+    .claim-form label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 9px; }
+    .claim-form textarea {
+      width: 100%; min-height: 100px; padding: 12px 13px;
+      border: 1px solid #d9dfeb; border-radius: 8px;
+      font: inherit; resize: vertical;
+    }
+    .claim-form button { margin-top: 12px; }
+    .button {
+      display: inline-block; padding: 13px 19px; border-radius: 8px;
+      text-decoration: none; font-size: 14px; font-weight: bold; text-align: center;
+      border: 1px solid #24479c; cursor: pointer;
+    }
+    .primary { background: #24479c; color: white; }
+    .primary:hover { background: #193779; }
+    .secondary { color: #24479c; background: white; }
+    .secondary:hover { background: #f0f4ff; }
+    .notice {
+      background: #fff8e6; border: 1px solid #f4dfaa; color: #805b10;
+      border-radius: 9px; padding: 13px; font-size: 13px;
+      line-height: 1.6; margin-top: 20px;
+    }
+    footer { text-align: center; color: #8792a5; font-size: 12px; padding: 25px; }
+    @media (max-width: 700px) {
+      .item-panel { grid-template-columns: 1fr; }
+      .visual { min-height: 190px; font-size: 65px; }
+      .content { padding: 24px; }
+      h1 { font-size: 25px; }
+      nav { padding: 17px 5%; }
+      nav .links { gap: 12px; }
+    }
+  </style>
 </head>
+
 <body>
-<main>
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/my-reports">My Reports</a>
-        <a href="/my-claims">My Claims</a>
-    </nav>
+  <%- include('partials/nav') %>
 
-    <section class="card">
-        <h1><%= item.item_name %></h1>
+  <main class="container">
+    <a class="back" href="/browse">← Back to Browse Items</a>
 
-        <p class="detail"><strong>Report Type:</strong> <%= item.report_type %></p>
-        <p class="detail"><strong>Category:</strong> <%= item.category %></p>
-        <p class="detail"><strong>Description:</strong> <%= item.description %></p>
-        <p class="detail"><strong>Color:</strong> <%= item.color || 'Not specified' %></p>
-        <p class="detail"><strong>Brand:</strong> <%= item.brand || 'Not specified' %></p>
-        <p class="detail"><strong>Location:</strong> <%= item.location %></p>
-        <p class="detail"><strong>Date:</strong> <%= item.event_date || 'Not specified' %></p>
-        <p class="detail"><strong>Reported by:</strong> <%= item.reporter_name %></p>
-        <p class="detail"><strong>Status:</strong> <%= item.status %></p>
+    <%
+      const currentItem = typeof item !== 'undefined' && item
+        ? item
+        : (typeof foundItem !== 'undefined' && foundItem ? foundItem : {});
+      const itemId = currentItem.id || currentItem.item_id || '';
+      const itemName = currentItem.item_name || currentItem.title || 'Item Details';
+      const itemStatus = currentItem.status || 'pending';
+      const itemCategory = currentItem.category_name || currentItem.category || 'Not specified';
+      const itemLocation = currentItem.location || currentItem.found_location || 'Not specified';
+      const itemDescription = currentItem.description || 'No description provided.';
+      const itemDate = currentItem.event_date || currentItem.created_at || currentItem.date_reported;
+      const canClaim = itemId &&
+        String(itemStatus).toLowerCase() === 'approved' &&
+        Number(currentItem.user_id) !== Number(currentUser && currentUser.id);
+    %>
 
-        <% if (item.user_id !== currentUser.id) { %>
-            <hr>
-            <h2>Claim This Item</h2>
-            <p>Please provide information to help verify that the item belongs to you.</p>
-
-            <form action="/item/<%= item.id %>/claim" method="POST">
-                <label for="verification_answer">Verification Details</label>
-                <input
-                    type="text"
-                    id="verification_answer"
-                    name="verification_answer"
-                    placeholder="Describe identifying details"
-                    required
-                    maxlength="500"
-                >
-                <button type="submit">Submit Claim</button>
-            </form>
+    <section class="item-panel">
+      <div class="visual">
+        <% if (currentItem.image && /^\/uploads\/[a-f0-9-]+\.(jpg|png|webp)$/i.test(currentItem.image)) { %>
+          <img src="<%= currentItem.image %>" alt="<%= itemName %>">
         <% } else { %>
-            <p class="notice">This is your own report.</p>
+          <span class="item-image-placeholder">No photo available</span>
+        <% } %>
+      </div>
+
+      <div class="content">
+        <span class="tag"><%= itemStatus %></span>
+        <h1><%= itemName %></h1>
+        <p class="description"><%= itemDescription %></p>
+
+        <div class="details">
+          <div class="detail-row">
+            <span>Category</span>
+            <span><%= itemCategory %></span>
+          </div>
+          <div class="detail-row">
+            <span>Location</span>
+            <span><%= itemLocation %></span>
+          </div>
+          <div class="detail-row">
+            <span>Date Reported</span>
+            <span><%= itemDate ? new Date(itemDate).toLocaleDateString() : 'Not specified' %></span>
+          </div>
+          <div class="detail-row">
+            <span>Item ID</span>
+            <span><%= itemId || 'Not available' %></span>
+          </div>
+          <div class="detail-row">
+            <span>Reported by</span>
+            <span><%= currentItem.reporter_name || 'Campus member' %></span>
+          </div>
+        </div>
+
+        <% if (canClaim) { %>
+          <form class="claim-form" action="/item/<%= itemId %>/claim" method="POST">
+            <label for="verification_answer">How can you verify this item is yours?</label>
+            <textarea id="verification_answer" name="verification_answer"
+                      maxlength="500" required></textarea>
+            <button class="button primary" type="submit">Submit Claim</button>
+          </form>
+        <% } else { %>
+          <div class="actions">
+            <% if (String(itemStatus).toLowerCase() !== 'approved') { %>
+              <span class="notice">This item is not currently available to claim.</span>
+            <% } %>
+            <a class="button secondary" href="/browse">Back to Items</a>
+          </div>
         <% } %>
 
-        <p><a href="/browse">← Back to Browse Items</a></p>
+        <div class="notice">
+          <strong>Reminder:</strong> Claim only items that genuinely belong to you. Be prepared to provide accurate identifying details to help verify ownership.
+        </div>
+      </div>
     </section>
-</main>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
 </body>
 </html>

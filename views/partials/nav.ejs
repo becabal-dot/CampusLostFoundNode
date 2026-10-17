@@ -1,0 +1,26 @@
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-brand" href="<%= currentUser ? '/dashboard' : '/' %>">
+      <img class="app-brand-logo" src="/images/campus-lost-found-logo.png"
+           alt="" width="40" height="40" fetchpriority="high">
+      <span>Campus Lost <span class="brand-amp">&amp;</span> Found</span>
+    </a>
+    <nav class="app-nav-links" aria-label="Main navigation">
+      <% if (currentUser) { %>
+        <a href="/dashboard" aria-current="<%= currentPath === '/dashboard' ? 'page' : '' %>">Dashboard</a>
+        <a href="/browse" aria-current="<%= currentPath === '/browse' ? 'page' : '' %>">Browse items</a>
+        <a href="/report" aria-current="<%= currentPath === '/report' ? 'page' : '' %>">Report item</a>
+        <a href="/my-reports" aria-current="<%= currentPath === '/my-reports' ? 'page' : '' %>">My reports</a>
+        <a href="/my-claims" aria-current="<%= currentPath === '/my-claims' || currentPath === '/claims' ? 'page' : '' %>">My claims</a>
+        <% if (currentUser.role === 'admin') { %>
+          <a href="/admin" aria-current="<%= currentPath === '/admin' ? 'page' : '' %>">Admin</a>
+        <% } %>
+        <a class="nav-logout" href="/logout">Log out</a>
+      <% } else { %>
+        <a href="/" aria-current="<%= currentPath === '/' ? 'page' : '' %>">Home</a>
+        <a href="/login" aria-current="<%= currentPath === '/login' ? 'page' : '' %>">Log in</a>
+        <a class="nav-signup" href="/register" aria-current="<%= currentPath === '/register' ? 'page' : '' %>">Create account</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

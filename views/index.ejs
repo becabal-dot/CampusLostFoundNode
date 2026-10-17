@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#203e83">
+  <title>Campus Lost &amp; Found System</title>
+  <link rel="stylesheet" href="/css/app.css?v=7">
+</head>
+<body class="home-page">
+  <%- include('partials/nav') %>
+
+  <main class="home-main">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-logo" aria-hidden="true">
+        <img src="/images/campus-lost-found-logo.png" alt="" width="220" height="220">
+      </div>
+      <h1 id="home-title">Campus Lost &amp; Found System</h1>
+      <p>A centralized system that helps students report, search, and recover lost and found items within the campus.</p>
+      <div class="home-actions">
+        <a class="home-button" href="<%= currentUser ? '/report?type=lost' : '/login' %>">Report Lost Item</a>
+        <a class="home-button home-button-outline" href="<%= currentUser ? '/report?type=found' : '/login' %>">Report Found Item</a>
+      </div>
+    </section>
+
+    <section class="home-features" aria-labelledby="features-title">
+      <div class="home-section-heading">
+        <h2 id="features-title">System Features</h2>
+      </div>
+      <div class="home-feature-grid">
+        <a class="home-feature-card" href="<%= currentUser ? '/report?type=lost' : '/login' %>">
+          <h3>Report Lost Items</h3>
+          <p>Students can submit information about items they have lost on campus.</p>
+        </a>
+        <a class="home-feature-card" href="<%= currentUser ? '/report?type=found' : '/login' %>">
+          <h3>Report Found Items</h3>
+          <p>Students can report items they have found and help return them to their owners.</p>
+        </a>
+        <a class="home-feature-card" href="<%= currentUser ? '/browse' : '/login' %>">
+          <h3>Search &amp; Claim</h3>
+          <p>Users can browse reported items and submit a claim for their belongings.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer">© 2026 Campus Lost &amp; Found System</footer>
+</body>
+</html>

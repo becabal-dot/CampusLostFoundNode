@@ -16,7 +16,9 @@ submissions. Administrators review reports and claims.
 
 - Email/password sign-in with server-side sessions and bcrypt password hashes
 - Student and administrator access control
+- Custom campus Lost & Found logo in the shared navigation and homepage
 - Lost/found item reports with input validation
+- Optional item photo uploads for reports (JPG, PNG, or WebP; maximum 5 MB)
 - Browse and search for administrator-approved reports
 - Claim submission with verification details
 - Personal report and claim history
@@ -42,15 +44,9 @@ non-functional requirements, use cases, and acceptance checks.
    npm install
    ```
 
-3. Create the database and tables. For a local MySQL command-line client:
-
-   ```powershell
-   mysql -u root -p < schema.sql
-   ```
-
-   Enter your local database password when prompted. You can also run
-   `schema.sql` from phpMyAdmin. The script creates the `campus_lost_found`
-   database and its tables.
+3. Start **MySQL** from the XAMPP Control Panel. In phpMyAdmin, open the SQL tab
+   and run the contents of `schema.sql`. The script creates the
+   `campus_lost_found` database and its tables.
 
 4. Create a private environment file:
 
@@ -73,13 +69,28 @@ non-functional requirements, use cases, and acceptance checks.
    accounts. Share test credentials with the instructor privately; never add
    them to this README or commit them.
 
-6. Start the application:
+6. If this database was created before photo uploads were added, run the
+   backward-compatible migration:
+
+   ```powershell
+   npm run db:migrate
+   ```
+
+   It adds `items.image` only when that column is missing and can be safely
+   repeated. Report photos are stored locally in `public/uploads`; the
+   directory is created automatically when the server starts.
+
+7. Set `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` in `.env`
+   to match MySQL. The defaults target XAMPP at `localhost:3306` with user `root`,
+   an empty password, and database `campus_lost_found`.
+
+8. Start the application:
 
    ```powershell
    npm start
    ```
 
-7. Open [http://localhost:3000](http://localhost:3000) in a browser. If using a
+9. Open [http://localhost:3000](http://localhost:3000) in a browser. If using a
    different port, set `PORT` in `.env`.
 
 ## Test accounts

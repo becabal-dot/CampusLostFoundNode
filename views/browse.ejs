@@ -1,137 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Browse Items | Campus Lost & Found</title>
-    <style>
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            padding: 30px 16px;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        main {
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        h1 { color: #24479c; }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        a { color: #24479c; }
-
-        .search {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        input {
-            flex: 1;
-            min-width: 0;
-            padding: 12px;
-            border: 1px solid #ccd3e0;
-            border-radius: 6px;
-        }
-
-        button {
-            padding: 12px 18px;
-            border: 0;
-            border-radius: 6px;
-            background: #24479c;
-            color: white;
-            cursor: pointer;
-        }
-
-        .items {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 18px;
-        }
-
-        .item {
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px #0000000d;
-            overflow-wrap: anywhere;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            background: #e8edff;
-            color: #24479c;
-            font-size: 13px;
-        }
-
-        .empty {
-            padding: 24px;
-            background: white;
-            border-radius: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Items | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 </head>
 <body>
-<main>
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/report">Report an Item</a>
-        <a href="/my-reports">My Reports</a>
-        <a href="/my-claims">My Claims</a>
-        <% if (currentUser && currentUser.role === 'admin') { %>
-            <a href="/admin">Admin Panel</a>
-        <% } %>
-    </nav>
+  <%- include('partials/nav') %>
 
-    <h1>Browse Lost & Found Items</h1>
-    <p>Search for items reported on campus.</p>
+  <main class="browse-shell">
+    <section class="browse-hero">
+      <div class="browse-hero-copy">
+        <p class="page-eyebrow"><span></span> Campus item directory</p>
+        <h1>Find what you’ve been missing.</h1>
+        <p>Explore approved found-item reports from around campus. A few details might help you reconnect with a lost belonging.</p>
+      </div>
+      <a class="page-primary-button" href="/report">Report an item <span aria-hidden="true">→</span></a>
+      <div class="browse-hero-orb" aria-hidden="true"></div>
+    </section>
 
-    <form class="search" action="/browse" method="GET">
-        <input
-            type="text"
-            name="search"
-            placeholder="Search item, category, description, or location"
-            value="<%= search %>"
-        >
-        <button type="submit">Search</button>
+    <section class="browse-results-header">
+      <div>
+        <p class="page-kicker">Explore listings</p>
+        <h2>Recently reported items</h2>
+      </div>
+      <p>Use the filters to narrow down your search.</p>
+    </section>
+
+    <form class="browse-filter-panel" action="/browse" method="GET">
+      <label class="browse-search-field" for="browse-search">
+        <span class="browse-filter-label">Search items</span>
+        <span class="browse-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <input id="browse-search" type="search" name="search"
+                 placeholder="Try “wallet” or “umbrella”"
+                 value="<%= typeof search !== 'undefined' && search ? search : '' %>">
+        </span>
+      </label>
+      <label class="browse-category-field" for="browse-category">
+        <span class="browse-filter-label">Category</span>
+        <select id="browse-category" name="category">
+          <option value="">All categories</option>
+          <% if (typeof categories !== 'undefined' && Array.isArray(categories)) { %>
+            <% categories.forEach(function(category) { %>
+              <option value="<%= category %>" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === category) ? 'selected' : '' %>>
+                <%= category %>
+              </option>
+            <% }) %>
+          <% } %>
+        </select>
+      </label>
+      <button class="browse-search-button" type="submit">Search items</button>
     </form>
 
-    <% if (items.length === 0) { %>
-        <div class="empty">
-            <h3>No items found.</h3>
-            <p>Try another search or check again later.</p>
+    <section class="browse-grid" aria-label="Found item listings">
+      <% if (typeof items !== 'undefined' && Array.isArray(items) && items.length > 0) { %>
+        <% items.forEach(function(item) { %>
+          <article class="browse-item-card">
+            <div class="browse-item-photo">
+              <% if (item.image && /^\/uploads\/[a-f0-9-]+\.(jpg|png|webp)$/i.test(item.image)) { %>
+                <img src="<%= item.image %>" alt="<%= item.item_name %>">
+              <% } else { %>
+                <span class="item-image-placeholder" aria-label="No item photo">No photo provided</span>
+              <% } %>
+              <span class="browse-type-badge"><%= item.report_type || 'Found' %></span>
+            </div>
+            <div class="browse-item-content">
+              <p class="browse-item-category"><%= item.category_name || item.category || 'Uncategorized' %></p>
+              <h3><%= item.item_name || item.title || 'Unnamed Item' %></h3>
+              <p class="browse-item-description"><%= item.description || 'No description provided.' %></p>
+              <div class="browse-item-meta">
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/>
+                    <circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.7"/>
+                  </svg>
+                  <%= item.location || item.found_location || 'Location not specified' %>
+                </span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4" y="5.5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M8 3.5v4M16 3.5v4M4 10h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                  <%= item.event_date ? new Date(item.event_date).toLocaleDateString() : (item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Date not specified') %>
+                </span>
+              </div>
+              <a class="browse-item-link" href="/item/<%= item.id || item.item_id %>">
+                View item details <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        <% }) %>
+      <% } else { %>
+        <div class="browse-empty-state">
+          <span class="browse-empty-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+              <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <h2>No matching items</h2>
+          <p>Try a different search or category. New approved reports will show here.</p>
+          <a class="page-secondary-button" href="/browse">Clear filters</a>
         </div>
-    <% } else { %>
-        <section class="items">
-            <% items.forEach(item => { %>
-                <article class="item">
-                    <span class="tag"><%= item.report_type %></span>
-                    <h2><%= item.item_name %></h2>
-                    <p><strong>Category:</strong> <%= item.category %></p>
-                    <p><strong>Description:</strong> <%= item.description %></p>
-                    <p><strong>Color:</strong> <%= item.color || 'Not specified' %></p>
-                    <p><strong>Brand:</strong> <%= item.brand || 'Not specified' %></p>
-                    <p><strong>Location:</strong> <%= item.location %></p>
-                    <p><strong>Date:</strong> <%= item.event_date || 'Not specified' %></p>
-                    <a href="/item/<%= item.id %>">View Details</a>
-                </article>
-            <% }) %>
-        </section>
-    <% } %>
-</main>
+      <% } %>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
 </body>
 </html>

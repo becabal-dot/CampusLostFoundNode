@@ -1,117 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Reports | Campus Lost & Found</title>
-    <style>
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            padding: 30px 16px;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        main { max-width: 1000px; margin: auto; }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        a { color: #24479c; }
-
-        h1 { color: #24479c; }
-
-        .table-wrap {
-            overflow-x: auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px #0000000d;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 650px;
-        }
-
-        th, td {
-            padding: 14px;
-            text-align: left;
-            border-bottom: 1px solid #e2e7f0;
-        }
-
-        th { background: #e8edff; }
-
-        .empty {
-            padding: 24px;
-            background: white;
-            border-radius: 10px;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            background: #e8edff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Reports | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 </head>
 <body>
-<main>
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/report">Report an Item</a>
-        <a href="/my-claims">My Claims</a>
-    </nav>
+  <%- include('partials/nav') %>
 
-    <h1>My Reports</h1>
-    <p>View the reports you have submitted and their current status.</p>
+  <main class="records-shell">
+    <%
+      const reportList = typeof reports !== 'undefined' && Array.isArray(reports)
+        ? reports
+        : (typeof items !== 'undefined' && Array.isArray(items) ? items : []);
+      const reportStatusCount = function(value) {
+        return reportList.filter(function(report) {
+          return String(report.status || 'Pending').toLowerCase() === value.toLowerCase();
+        }).length;
+      };
+    %>
 
-    <% if (items.length === 0) { %>
-        <section class="empty">
-            <h3>You haven't submitted any reports yet.</h3>
-            <a href="/report">Submit your first report</a>
-        </section>
-    <% } else { %>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Report Type</th>
-                        <th>Category</th>
-                        <th>Location</th>
-                        <th>Date Submitted</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% items.forEach(item => { %>
-                        <tr>
-                            <td>
-                                <a href="/item/<%= item.id %>">
-                                    <%= item.item_name %>
-                                </a>
-                            </td>
-                            <td><%= item.report_type %></td>
-                            <td><%= item.category %></td>
-                            <td><%= item.location %></td>
-                            <td><%= item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A' %></td>
-                            <td><span class="status"><%= item.status %></span></td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+    <section class="records-page-heading">
+      <div>
+        <p class="page-eyebrow"><span></span> Your activity</p>
+        <h1>My reports</h1>
+        <p>Keep an eye on your submitted lost and found reports and see when their status changes.</p>
+      </div>
+      <a href="/report" class="page-primary-button">Create a report <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="records-summary" aria-label="Report summary">
+      <article class="records-summary-card records-summary-total">
+        <span class="records-summary-mark" aria-hidden="true">01</span>
+        <div><p>Total reports</p><strong><%= reportList.length %></strong></div>
+      </article>
+      <article class="records-summary-card records-summary-pending">
+        <span class="records-summary-mark" aria-hidden="true">02</span>
+        <div><p>In review</p><strong><%= reportStatusCount('pending') %></strong></div>
+      </article>
+      <article class="records-summary-card records-summary-approved">
+        <span class="records-summary-mark" aria-hidden="true">03</span>
+        <div><p>Approved</p><strong><%= reportStatusCount('approved') %></strong></div>
+      </article>
+    </section>
+
+    <section class="table-wrap records-table-wrap">
+      <% if (reportList.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Report Type</th>
+              <th>Location</th>
+              <th>Date Reported</th>
+              <th>Status</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% reportList.forEach(function(report) {
+              const status = String(report.status || 'Pending');
+              const statusClass = status.toLowerCase().replace(/[^a-z]/g, '');
+              const type = report.report_type || report.type || report.item_type || 'Not specified';
+              const id = report.id || report.item_id || '';
+              const date = report.created_at || report.date_reported || report.reported_at;
+            %>
+              <tr>
+                <td>
+                  <% if (report.image && /^\/uploads\/[a-f0-9-]+\.(jpg|png|webp)$/i.test(report.image)) { %>
+                    <img class="report-thumbnail" src="<%= report.image %>"
+                         alt="Photo of <%= report.item_name || report.title || 'reported item' %>">
+                  <% } %>
+                  <div class="item-name"><%= report.item_name || report.title || 'Unnamed Item' %></div>
+                  <div class="muted">ID: <%= id || 'N/A' %></div>
+                </td>
+                <td>
+                  <span class="badge <%= String(type).toLowerCase() === 'lost' ? 'lost' : (String(type).toLowerCase() === 'found' ? 'found' : '') %>">
+                    <%= type %>
+                  </span>
+                </td>
+                <td><%= report.location || report.found_location || 'Not specified' %></td>
+                <td><%= date ? new Date(date).toLocaleDateString() : 'Not specified' %></td>
+                <td><span class="badge <%= statusClass %>"><%= status %></span></td>
+                <td>
+                  <% if (id) { %>
+                    <a class="view-link" href="/item/<%= id %>">View details →</a>
+                  <% } else { %>
+                    <span class="muted">Unavailable</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="records-empty-state">
+          <span class="records-empty-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 3.75h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.75a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M14 4v4h4M9 13h6M9 16.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <h2>No reports yet</h2>
+          <p>Your submitted reports will appear here so you can track their progress.</p>
+          <a href="/report" class="page-primary-button">Create your first report <span aria-hidden="true">→</span></a>
         </div>
-    <% } %>
-</main>
+      <% } %>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
 </body>
 </html>

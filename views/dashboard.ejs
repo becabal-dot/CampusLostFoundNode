@@ -1,115 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Campus Lost & Found | Dashboard</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #24324a;
-        }
-
-        header {
-            background: #24479c;
-            color: white;
-            padding: 20px 6%;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 16px 6%;
-            background: white;
-            border-bottom: 1px solid #e2e7f0;
-        }
-
-        nav a {
-            color: #24479c;
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            background: #e8edff;
-        }
-
-        main {
-            max-width: 1000px;
-            margin: 32px auto;
-            padding: 0 20px;
-        }
-
-        .welcome {
-            background: white;
-            padding: 26px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .welcome h2 {
-            color: #24479c;
-            margin-top: 0;
-        }
-
-        .role {
-            display: inline-block;
-            background: #e8edff;
-            padding: 6px 12px;
-            border-radius: 20px;
-            text-transform: capitalize;
-        }
-
-        .notice {
-            margin-top: 18px;
-            color: #596579;
-            font-size: 14px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=5">
 </head>
+
 <body>
-    <header>
-        <h1>Campus Lost &amp; Found System</h1>
-    </header>
+  <%- include('partials/nav') %>
 
-    <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/browse">Browse Items</a>
-        <a href="/report">Report Lost / Found</a>
-        <a href="/my-reports">My Reports</a>
-        <a href="/my-claims">My Claims</a>
+  <main class="dashboard-shell">
+    <section class="dashboard-hero" aria-labelledby="dashboard-title">
+      <div class="dashboard-hero-copy">
+        <p class="dashboard-eyebrow"><span></span> Student dashboard</p>
+        <h1 id="dashboard-title">
+          Welcome back, <%= typeof user !== 'undefined' && user && user.full_name ? user.full_name : 'Student' %>
+        </h1>
+        <p class="dashboard-intro">
+          Keep track of your reports, find recently recovered belongings, and help
+          make campus a little more connected.
+        </p>
+        <div class="dashboard-hero-actions">
+          <a class="dashboard-button dashboard-button-primary" href="/report?type=lost">
+            Report a lost item <span aria-hidden="true">→</span>
+          </a>
+          <a class="dashboard-button dashboard-button-light" href="/report?type=found">
+            Report a found item
+          </a>
+        </div>
+      </div>
 
-        <% if (user.role === 'admin') { %>
-            <a href="/admin">Admin Panel</a>
-        <% } %>
+      <div class="dashboard-hero-art" aria-hidden="true">
+        <div class="dashboard-orbit dashboard-orbit-outer"></div>
+        <div class="dashboard-orbit dashboard-orbit-inner"></div>
+        <div class="dashboard-hero-mark">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M32 55s19-17 19-32a19 19 0 1 0-38 0c0 15 19 32 19 32Z" stroke="currentColor" stroke-width="3"/>
+            <circle cx="32" cy="23" r="7" stroke="currentColor" stroke-width="3"/>
+            <path d="m24 42 5 5 12-12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="dashboard-art-caption">
+          <strong>Lost something?</strong>
+          <span>Your campus community can help.</span>
+        </div>
+      </div>
+    </section>
 
-        <a href="/logout">Log Out</a>
-    </nav>
+    <section class="dashboard-stats" aria-label="Your activity summary">
+      <article class="dashboard-stat dashboard-stat-blue">
+        <span class="dashboard-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H20v16H7.5A2.5 2.5 0 0 0 5 21V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M5 18.5A2.5 2.5 0 0 1 7.5 16H20M9 7h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <div>
+          <p class="dashboard-stat-label">Available found items</p>
+          <p class="dashboard-stat-value"><%= typeof availableCount !== 'undefined' ? availableCount : 0 %></p>
+        </div>
+        <span class="dashboard-stat-note">Ready to browse</span>
+      </article>
 
-    <main>
-        <section class="welcome">
-            <h2>Welcome, <%= user.full_name %>!</h2>
-            <p>Email: <%= user.email %></p>
-            <p>Role: <span class="role"><%= user.role %></span></p>
+      <article class="dashboard-stat dashboard-stat-violet">
+        <span class="dashboard-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M8 4h8a2 2 0 0 1 2 2v15l-6-3-6 3V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M9 9h6M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <div>
+          <p class="dashboard-stat-label">My reports</p>
+          <p class="dashboard-stat-value"><%= typeof reportCount !== 'undefined' ? reportCount : 0 %></p>
+        </div>
+        <span class="dashboard-stat-note">Reports submitted</span>
+      </article>
 
-            <p class="notice">
-                Use the navigation menu to access the system features.
-            </p>
-        </section>
-    </main>
+      <article class="dashboard-stat dashboard-stat-teal">
+        <span class="dashboard-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div>
+          <p class="dashboard-stat-label">My claims</p>
+          <p class="dashboard-stat-value"><%= typeof claimCount !== 'undefined' ? claimCount : 0 %></p>
+        </div>
+        <span class="dashboard-stat-note">Claims in progress</span>
+      </article>
+    </section>
+
+    <section class="dashboard-quick-access" aria-labelledby="quick-access-title">
+      <div class="dashboard-section-heading">
+        <div>
+          <p class="dashboard-section-kicker">Your workspace</p>
+          <h2 id="quick-access-title">Quick access</h2>
+        </div>
+        <p>Pick up where you left off.</p>
+      </div>
+
+      <div class="dashboard-actions">
+        <a class="dashboard-action-card" href="/browse">
+          <span class="dashboard-action-icon dashboard-action-icon-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+              <path d="m16 16 4.5 4.5M8 11h5.5M10.75 8.25v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="dashboard-action-copy">
+            <strong>Browse found items</strong>
+            <span>Search approved listings and see if something is yours.</span>
+          </span>
+          <span class="dashboard-action-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a class="dashboard-action-card" href="/my-reports">
+          <span class="dashboard-action-icon dashboard-action-icon-violet" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 3.75h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.75a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M14 4v4h4M9 13h6M9 16.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="dashboard-action-copy">
+            <strong>My reports</strong>
+            <span>Check your submitted reports and their review status.</span>
+          </span>
+          <span class="dashboard-action-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a class="dashboard-action-card" href="/my-claims">
+          <span class="dashboard-action-icon dashboard-action-icon-teal" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.5 19 7v5c0 4.4-2.9 7.2-7 9-4.1-1.8-7-4.6-7-9V7l7-3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="dashboard-action-copy">
+            <strong>My claims</strong>
+            <span>Follow up on items you have requested to claim.</span>
+          </span>
+          <span class="dashboard-action-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
 </body>
 </html>

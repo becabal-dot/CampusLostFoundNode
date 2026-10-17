@@ -2,138 +2,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Campus Lost & Found</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #f1f5fb;
-            color: #243247;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 420px;
-            padding: 35px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 35px rgba(30, 55, 90, 0.12);
-        }
-
-        h1 {
-            margin: 0 0 8px;
-            color: #24479c;
-            text-align: center;
-            font-size: 25px;
-        }
-
-        .subtitle {
-            margin: 0 0 28px;
-            text-align: center;
-            color: #68758a;
-            font-size: 14px;
-        }
-
-        label {
-            display: block;
-            margin: 16px 0 7px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-
-        input:focus {
-            outline: 2px solid #9cb6f5;
-            border-color: #24479c;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 24px;
-            padding: 13px;
-            border: none;
-            border-radius: 8px;
-            background: #24479c;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #193878;
-        }
-
-        .error {
-            padding: 11px;
-            border-radius: 8px;
-            background: #fee2e2;
-            color: #991b1b;
-            font-size: 14px;
-        }
-
-        .footer {
-            margin-top: 22px;
-            text-align: center;
-            color: #68758a;
-            font-size: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Campus Lost & Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=6">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f6fc;
+      color: #202b40;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      background: #24479c;
+      color: white;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 19px; font-weight: bold; }
+    nav a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 45px 18px;
+    }
+    .login-card {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      padding: 38px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(28, 54, 105, 0.09);
+    }
+    .icon {
+      width: 58px;
+      height: 58px;
+      background: #e8efff;
+      color: #24479c;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 27px;
+      margin-bottom: 22px;
+    }
+    .icon.auth-monogram {
+      border: 1px solid #dbe4f5;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+    h1 { font-size: 28px; margin-bottom: 10px; }
+    .subtitle { color: #718096; font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
+    .error {
+      background: #fff0f0;
+      color: #b42318;
+      border: 1px solid #ffd1d1;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+    label { display: block; font-weight: bold; font-size: 13px; margin: 17px 0 8px; }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d9dfeb;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+    input:focus { border-color: #24479c; box-shadow: 0 0 0 3px #24479c18; }
+    .submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      background: #24479c;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .submit:hover { background: #193779; }
+    .bottom { text-align: center; margin-top: 23px; color: #718096; font-size: 14px; }
+    .bottom a { color: #24479c; text-decoration: none; font-weight: bold; }
+    .bottom a:hover { text-decoration: underline; }
+    footer { text-align: center; color: #8792a5; font-size: 12px; padding: 20px; }
+    @media (max-width: 480px) {
+      .login-card { padding: 27px 22px; }
+      h1 { font-size: 25px; }
+      nav { padding: 16px 5%; }
+      nav a { margin-left: 10px; }
+    }
+  </style>
 </head>
 <body>
-    <main class="login-card">
-        <h1>Campus Lost & Found</h1>
-        <p class="subtitle">Sign in to your campus account</p>
+  <%- include('partials/nav') %>
 
-        <% if (typeof error !== 'undefined' && error) { %>
-            <p class="error"><%= error %></p>
-        <% } %>
+  <main class="auth-main">
+    <section class="login-card auth-card">
+      <div class="icon auth-monogram" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+          <path d="m16 16 4.5 4.5M8 11h5.5M10.75 8.25v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Welcome back!</h1>
+      <p class="subtitle">Log in to your account to report lost items, browse found belongings, and manage your claims.</p>
 
-        <form action="/login" method="POST">
-            <label for="email">Email Address</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                autocomplete="username"
-                required
-            >
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
 
-            <label for="password">Password</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                autocomplete="current-password"
-                required
-            >
+      <form action="/login" method="POST">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email address"
+          autocomplete="email"
+          required
+        >
 
-            <button type="submit">Log In</button>
-        </form>
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
 
-        <p class="footer">
-            Campus Lost & Found System
-        </p>
-    </main>
+        <button class="submit" type="submit">Log In</button>
+      </form>
+
+      <p class="bottom">Don't have an account? <a href="/register">Create one</a></p>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
 </body>
 </html>

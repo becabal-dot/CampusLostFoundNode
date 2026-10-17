@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Campus Lost &amp; Found</title>
+  <link rel="stylesheet" href="/css/app.css?v=6">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f6fc;
+      color: #202b40;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      background: #24479c;
+      color: white;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 19px; font-weight: bold; }
+    nav a { color: white; text-decoration: none; margin-left: 18px; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 38px 18px;
+    }
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 490px;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(28, 54, 105, .09);
+    }
+    .icon {
+      width: 55px;
+      height: 55px;
+      background: #e8efff;
+      color: #24479c;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .icon.auth-monogram {
+      border: 1px solid #dbe4f5;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+    h1 { font-size: 27px; margin-bottom: 10px; }
+    .subtitle { color: #718096; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    .error {
+      background: #fff0f0;
+      color: #b42318;
+      border: 1px solid #ffd1d1;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+    .field { margin-bottom: 17px; }
+    label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+    input {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #d9dfeb;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #24479c; box-shadow: 0 0 0 3px #24479c18; }
+    .hint { color: #8792a5; font-size: 12px; line-height: 1.5; margin-top: 7px; }
+    .submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 5px;
+      background: #24479c;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .submit:hover { background: #193779; }
+    .bottom { text-align: center; margin-top: 22px; color: #718096; font-size: 14px; }
+    .bottom a { color: #24479c; text-decoration: none; font-weight: bold; }
+    .bottom a:hover { text-decoration: underline; }
+    footer { text-align: center; color: #8792a5; font-size: 12px; padding: 20px; }
+    @media (max-width: 480px) {
+      .card { padding: 26px 21px; }
+      h1 { font-size: 24px; }
+      nav { padding: 16px 5%; }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('partials/nav') %>
+
+  <main class="auth-main">
+    <section class="card auth-card">
+      <div class="icon auth-monogram" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+          <path d="m16 16 4.5 4.5M8 11h5.5M10.75 8.25v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Create an Account</h1>
+      <p class="subtitle">Register to report lost belongings, browse found items, and manage your claims.</p>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <form action="/register" method="POST">
+        <div class="field">
+          <label for="full_name">Full Name *</label>
+          <input type="text" id="full_name" name="full_name"
+                 placeholder="Enter your full name"
+                 autocomplete="name" maxlength="100" required>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" name="email"
+                 placeholder="Enter your email address"
+                 autocomplete="email" maxlength="150" required>
+          <p class="hint">Use your school email if registration is restricted to campus students.</p>
+        </div>
+
+        <div class="field">
+          <label for="password">Password *</label>
+          <input type="password" id="password" name="password"
+                 placeholder="Create a password"
+                 autocomplete="new-password" minlength="8" required>
+          <p class="hint">Use at least 8 characters.</p>
+        </div>
+
+        <div class="field">
+          <label for="confirm_password">Confirm Password *</label>
+          <input type="password" id="confirm_password" name="confirm_password"
+                 placeholder="Re-enter your password"
+                 autocomplete="new-password" minlength="8" required>
+        </div>
+
+        <button class="submit" type="submit">Create Account</button>
+      </form>
+
+      <p class="bottom">Already have an account? <a href="/login">Log in</a></p>
+    </section>
+  </main>
+
+  <footer>© Campus Lost &amp; Found System</footer>
+
+  <script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+
+      if (password !== confirmPassword) {
+        event.preventDefault();
+        alert('Passwords do not match. Please check and try again.');
+      }
+    });
+  </script>
+</body>
+</html>
