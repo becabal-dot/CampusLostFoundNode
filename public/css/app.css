@@ -3793,3 +3793,99 @@ footer {
     padding-top: 14px !important;
   }
 }
+
+
+/* ===== JUA'S UI ACCESSIBILITY AND DESIGN IMPROVEMENTS ===== */
+
+/* Make keyboard navigation easier to see */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #f4b942;
+  outline-offset: 3px;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+.btn,
+.home-button,
+.page-primary-button,
+.page-secondary-button,
+.dashboard-button {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.2s ease;
+}
+
+/* Improve card appearance */
+.home-feature-card,
+.browse-item-card,
+.records-summary-card,
+.feature-card {
+  transition: box-shadow 0.2s ease,
+              border-color 0.2s ease,
+              transform 0.2s ease;
+}
+
+.home-feature-card:hover,
+.browse-item-card:hover,
+.records-summary-card:hover,
+.feature-card:hover {
+  border-color: #c2d0ee;
+  box-shadow: 0 6px 18px rgba(36, 71, 156, 0.09);
+}
+
+/* Make form fields easier to identify */
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #24479c;
+}
+
+/* Improve table readability */
+table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+table tbody tr:hover {
+  background-color: #f3f6fc;
+}
+
+/* Prevent long content from breaking small screens */
+img {
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .home-feature-card,
+  .browse-item-card,
+  .records-summary-card,
+  .feature-card {
+    box-shadow: none;
+  }
+
+  table {
+    font-size: 14px;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
