@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,7 +107,7 @@
                 <td><%= item.reporter_name %></td>
                 <td><%= item.status %></td>
                 <td>
-                  <form class="status-form" action="/admin/items/<%= item.id %>/status" method="POST">
+                  <form class="status-form" action="/admin/items/<%= item.id %>/status" method="POST" onsubmit="return confirm('Are you sure you want to update this item status?');">
                     <select name="status" aria-label="Status for <%= item.item_name %>">
                       <% ['pending', 'approved', 'rejected'].forEach(function(status) { %>
                         <option value="<%= status %>" <%= item.status === status ? 'selected' : '' %>><%= status %></option>
@@ -141,7 +140,7 @@
                 <td><%= claim.verification_answer %></td>
                 <td><%= claim.status %></td>
                 <td>
-                  <form class="status-form" action="/admin/claims/<%= claim.id %>/status" method="POST">
+                  <form class="status-form" action="/admin/claims/<%= claim.id %>/status" method="POST" onsubmit="return confirm('Are you sure you want to update this claim status?');">
                     <select name="status" aria-label="Status for claim <%= claim.id %>">
                       <% ['pending', 'approved', 'rejected'].forEach(function(status) { %>
                         <option value="<%= status %>" <%= claim.status === status ? 'selected' : '' %>><%= status %></option>
