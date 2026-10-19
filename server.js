@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 const express = require('express');
@@ -20,8 +19,10 @@ const imageTypes = {
     'image/webp': '.webp'
 };
 
+// Ensure the upload directory exists for item photos
 fs.mkdirSync(uploadDirectory, { recursive: true });
 
+// Configure Multer for handling image uploads (max 5MB, specific formats only)
 const reportImageUpload = multer({
     storage: multer.diskStorage({
         destination: uploadDirectory,
@@ -44,29 +45,34 @@ const reportImageUpload = multer({
     }
 });
 
+// Set EJS as the template engine for rendering views
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
+// Middleware to parse form data and serve static files (CSS, images)
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
 
+// Configure session management for secure user logins
 app.use(session({
     secret: process.env.SESSION_SECRET || 'campus-lost-found-dev-secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        maxAge: 60 * 60 * 1000,
+        maxAge: 60 * 60 * 1000, // 1 hour session
         sameSite: 'lax'
     }
 }));
 
+// Global middleware to make user data accessible in all EJS templates
 app.use((req, res, next) => {
     res.locals.currentUser = req.session.user || null;
     res.locals.currentPath = req.path;
     next();
 });
 
+// Access Control Middleware: Ensures only logged-in users can access specific routes
 function requireLogin(req, res, next) {
     if (!req.session.user) {
         return res.redirect('/login');
@@ -74,6 +80,7 @@ function requireLogin(req, res, next) {
     next();
 }
 
+// Access Control Middleware: Ensures only Administrators can access admin routes
 function requireAdmin(req, res, next) {
     if (!req.session.user) {
         return res.redirect('/login');
@@ -86,6 +93,7 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+// Helper functions for input validation and sanitization
 function getPositiveInteger(value) {
     if (!/^[1-9]\d*$/.test(String(value))) {
         return null;
@@ -99,6 +107,7 @@ function getString(value) {
     return typeof value === 'string' ? value.trim() : '';
 }
 
+// Helper function to map database error codes to user-friendly messages
 function getDatabaseFailureMessage(error) {
     const failures = Array.isArray(error && error.errors)
         ? error.errors
@@ -135,6 +144,7 @@ function validDate(value) {
         date.toISOString().slice(0, 10) === value;
 }
 
+// Cleanup function to delete uploaded files if the report submission fails
 async function removeUploadedImage(file) {
     if (!file) {
         return;
@@ -149,6 +159,7 @@ async function removeUploadedImage(file) {
     }
 }
 
+// Security function to verify the actual file signature (magic numbers) of uploaded images
 async function hasValidImageSignature(file) {
     const handle = await fs.promises.open(file.path, 'r');
     const header = Buffer.alloc(12);
@@ -179,6 +190,7 @@ async function hasValidImageSignature(file) {
     }
 }
 
+// Middleware to handle Multer upload errors gracefully
 function handleReportImageUpload(req, res, next) {
     reportImageUpload.single('proof_image')(req, res, (error) => {
         if (!error) {
@@ -206,6 +218,10 @@ function handleReportImageUpload(req, res, next) {
         next(error);
     });
 }
+
+// ==========================================
+// ROUTES SECTION
+// ==========================================
 
 // HOME PAGE
 app.get('/', (req, res) => {
@@ -279,7 +295,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// LOGIN
+// LOGIN PAGE
 app.get('/login', (req, res) => {
     if (req.session.user) {
         return res.redirect('/dashboard');
@@ -288,6 +304,7 @@ app.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
 
+// LOGIN SUBMISSION
 app.post('/login', async (req, res) => {
     const email = getString(req.body.email).toLowerCase();
 
@@ -302,6 +319,7 @@ app.post('/login', async (req, res) => {
     }
 
     try {
+        // Fetch user from database
         const [users] = await db.execute(
             `SELECT id, full_name, email, password, role
              FROM users
@@ -310,6 +328,7 @@ app.post('/login', async (req, res) => {
             [email]
         );
 
+        // Verify password using bcrypt
         if (
             users.length === 0 ||
             !(await bcrypt.compare(password, users[0].password))
@@ -321,6 +340,7 @@ app.post('/login', async (req, res) => {
 
         const user = users[0];
 
+        // Create secure session
         req.session.regenerate((error) => {
             if (error) {
                 console.error('Session regeneration error:', error);
@@ -370,11 +390,12 @@ app.get('/logout', (req, res, next) => {
     });
 });
 
-// DASHBOARD
+// DASHBOARD (Protected Route)
 app.get('/dashboard', requireLogin, async (req, res) => {
     try {
         const userId = req.session.user.id;
 
+        // Fetch counts for user dashboard statistics
         const [[reports]] = await db.execute(
             'SELECT COUNT(*) AS total FROM items WHERE user_id = ?',
             [userId]
@@ -404,13 +425,14 @@ app.get('/dashboard', requireLogin, async (req, res) => {
     }
 });
 
-// BROWSE ITEMS
+// BROWSE ITEMS (Protected Route)
 app.get('/browse', requireLogin, async (req, res) => {
     try {
         const search = getString(req.query.search);
         const selectedCategory = getString(req.query.category);
         const term = `%${search}%`;
 
+        // Fetch approved items from database based on search and category filters
         const [items] = await db.execute(
             `SELECT id, item_name, report_type, category, description,
                     color, brand, location, event_date, image, status, created_at
@@ -427,6 +449,7 @@ app.get('/browse', requireLogin, async (req, res) => {
             [selectedCategory, selectedCategory, term, term, term, term]
         );
 
+        // Fetch unique categories for the filter dropdown
         const [categoryRows] = await db.execute(
             `SELECT DISTINCT category
              FROM items
@@ -446,7 +469,7 @@ app.get('/browse', requireLogin, async (req, res) => {
     }
 });
 
-// ITEM DETAILS
+// ITEM DETAILS (Protected Route)
 app.get('/item/:id', requireLogin, async (req, res) => {
     const itemId = getPositiveInteger(req.params.id);
 
@@ -455,6 +478,7 @@ app.get('/item/:id', requireLogin, async (req, res) => {
     }
 
     try {
+        // Fetch specific item details including the reporter's name
         const [items] = await db.execute(
             `SELECT items.*, users.full_name AS reporter_name
              FROM items
@@ -475,7 +499,7 @@ app.get('/item/:id', requireLogin, async (req, res) => {
     }
 });
 
-// REPORT FORM
+// REPORT FORM PAGE
 app.get('/report', requireLogin, (req, res) => {
     const reportType = ['lost', 'found'].includes(
         getString(req.query.type).toLowerCase()
@@ -486,7 +510,7 @@ app.get('/report', requireLogin, (req, res) => {
     res.render('report', { error: null, reportType });
 });
 
-// SUBMIT REPORT
+// SUBMIT REPORT (Handles Text Data and Image Upload)
 app.post('/report', requireLogin, handleReportImageUpload, async (req, res) => {
     const reportType = getString(req.body.report_type).toLowerCase();
     const itemName = getString(req.body.item_name);
@@ -497,6 +521,7 @@ app.post('/report', requireLogin, handleReportImageUpload, async (req, res) => {
     const location = getString(req.body.location);
     const submittedDate = getString(req.body.event_date);
 
+    // Form Validation
     const invalid =
         !['lost', 'found'].includes(reportType) ||
         !itemName || itemName.length > 150 ||
@@ -518,6 +543,7 @@ app.post('/report', requireLogin, handleReportImageUpload, async (req, res) => {
     const eventDate = submittedDate;
 
     try {
+        // Validate image signature to prevent malicious file uploads
         if (req.file && !(await hasValidImageSignature(req.file))) {
             await removeUploadedImage(req.file);
             return res.status(400).render('report', {
@@ -526,6 +552,7 @@ app.post('/report', requireLogin, handleReportImageUpload, async (req, res) => {
             });
         }
 
+        // Insert new report into the database as 'pending'
         await db.execute(
             `INSERT INTO items
                 (user_id, report_type, item_name, category, description,
@@ -557,7 +584,7 @@ app.post('/report', requireLogin, handleReportImageUpload, async (req, res) => {
     }
 });
 
-// SUBMIT CLAIM
+// SUBMIT CLAIM (Allows users to claim an approved found item)
 app.post('/item/:id/claim', requireLogin, async (req, res) => {
     const itemId = getPositiveInteger(req.params.id);
     const verificationAnswer = getString(
@@ -575,6 +602,7 @@ app.post('/item/:id/claim', requireLogin, async (req, res) => {
     }
 
     try {
+        // Verify item existence and eligibility for claiming
         const [items] = await db.execute(
             `SELECT id, user_id, status
              FROM items
@@ -599,6 +627,7 @@ app.post('/item/:id/claim', requireLogin, async (req, res) => {
             );
         }
 
+        // Prevent duplicate claims by the same user
         const [existingClaims] = await db.execute(
             `SELECT id
              FROM claims
@@ -613,6 +642,7 @@ app.post('/item/:id/claim', requireLogin, async (req, res) => {
             );
         }
 
+        // Insert new claim request
         await db.execute(
             `INSERT INTO claims
                 (item_id, claimant_id, verification_answer)
@@ -627,7 +657,7 @@ app.post('/item/:id/claim', requireLogin, async (req, res) => {
     }
 });
 
-// MY REPORTS
+// MY REPORTS PAGE
 app.get('/my-reports', requireLogin, async (req, res) => {
     try {
         const [items] = await db.execute(
@@ -646,7 +676,7 @@ app.get('/my-reports', requireLogin, async (req, res) => {
     }
 });
 
-// MY CLAIMS
+// MY CLAIMS PAGE
 app.get('/my-claims', requireLogin, async (req, res) => {
     try {
         const [claims] = await db.execute(
@@ -668,13 +698,19 @@ app.get('/my-claims', requireLogin, async (req, res) => {
     }
 });
 
+// Redirect old claims route to the new one for safety
 app.get('/claims', requireLogin, (req, res) => {
     res.redirect('/my-claims');
 });
 
-// ADMIN PANEL
+// ==========================================
+// ADMIN SECTION
+// ==========================================
+
+// ADMIN DASHBOARD
 app.get('/admin', requireAdmin, async (req, res) => {
     try {
+        // Fetch all items and their reporters for admin review
         const [items] = await db.execute(
             `SELECT items.id, items.item_name, items.report_type,
                     items.category, items.image, items.status,
@@ -684,6 +720,7 @@ app.get('/admin', requireAdmin, async (req, res) => {
              ORDER BY items.created_at DESC`
         );
 
+        // Fetch all claims and associated user/item data
         const [claims] = await db.execute(
             `SELECT claims.id, claims.verification_answer,
                     claims.status, items.item_name,
@@ -694,6 +731,7 @@ app.get('/admin', requireAdmin, async (req, res) => {
              ORDER BY claims.created_at DESC`
         );
 
+        // Aggregate statistics for the admin dashboard counters
         const [[itemCounts]] = await db.execute(
             `SELECT COUNT(*) AS total,
                     SUM(LOWER(status) = 'pending') AS pending,
@@ -725,7 +763,7 @@ app.get('/admin', requireAdmin, async (req, res) => {
     }
 });
 
-// UPDATE ITEM STATUS
+// UPDATE ITEM STATUS (Admin Action)
 app.post('/admin/items/:id/status', requireAdmin, async (req, res) => {
     const itemId = getPositiveInteger(req.params.id);
     const status = getString(req.body.status).toLowerCase();
@@ -758,7 +796,7 @@ app.post('/admin/items/:id/status', requireAdmin, async (req, res) => {
     }
 });
 
-// UPDATE CLAIM STATUS
+// UPDATE CLAIM STATUS (Admin Action)
 app.post('/admin/claims/:id/status', requireAdmin, async (req, res) => {
     const claimId = getPositiveInteger(req.params.id);
     const status = getString(req.body.status).toLowerCase();
@@ -791,12 +829,12 @@ app.post('/admin/claims/:id/status', requireAdmin, async (req, res) => {
     }
 });
 
-// 404 PAGE
+// 404 PAGE - Handles unknown routes
 app.use((req, res) => {
     res.status(404).send('Page not found.');
 });
 
-// ERROR HANDLER
+// ERROR HANDLER - Global error catching
 app.use((error, req, res, next) => {
     console.error('Unhandled server error:', error);
 
